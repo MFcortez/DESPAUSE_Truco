@@ -5,10 +5,10 @@ using TMPro;
 
 public enum EnumNaipes
 {
-    ouros,
-    espada,
-    copas,
-    paus
+    ouros = 1,
+    espada = 2,
+    copas = 3,
+    paus = 4
 };
 
 public class Carta : MonoBehaviour
@@ -21,9 +21,13 @@ public class Carta : MonoBehaviour
 
     public TMP_Text txtNumero;
 
-    public void Construtor (EnumNaipes enumNaipe, int num)
+    public void Reset()
     {
         manilha = false;
+    }
+
+    public void Construtor (EnumNaipes enumNaipe, int num)
+    {
         naipe = enumNaipe;
         numero = num.ToString();
 
@@ -62,5 +66,10 @@ public class Carta : MonoBehaviour
         }
 
         return realeza;
+    }
+
+    public void SetaManilha()
+    {
+        manilha = true;
     }
 }

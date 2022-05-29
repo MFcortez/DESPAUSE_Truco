@@ -5,14 +5,19 @@ using UnityEngine;
 public class Baralho : MonoBehaviour
 {
     public List<GameObject> cartas = new List<GameObject>();
-    List<Carta> descarte = new List<Carta>();
+    public List<Carta> descarte = new List<Carta>();
+    int manilha;
     public Carta tombo;
-    public GameObject cartaPrefab;
+    public GameObject cartaPrefab, 
+        gameObjectTombo;
     public Jogador[] jogadores;
+
+    int rodada;
+    int pontos;
     
     void Start()
     {
-        for (int i = 0; i < 40; i++)
+        for (int i = 0; i < 41; i++)
         {
             if(i > 0)
             {
@@ -51,25 +56,84 @@ public class Baralho : MonoBehaviour
 
     public void DarCartas()
     {
-        int index = Random.Range(0, cartas.Count);
-        tombo = cartas[index].GetComponent<Carta>();
-        cartas[index].transform.parent = tombo.transform;
-        cartas[index].transform.position = new Vector3(0, 0, 0);
-        cartas.Remove(cartas[index]);
+        tombo = GetCarta();
+        tombo.transform.position = gameObjectTombo.transform.position;
+        manilha = tombo.valor;
+        if(manilha == 13)
+        {
+            manilha = 4;
+        }
+        else
+        {
+            manilha++;
+        }
+        cartas.Remove(tombo.gameObject);
         foreach (Jogador jogador in jogadores)
         {
             for (int i = 0; i < 3; i++)
             {
-                index = Random.Range(0, cartas.Count);
-                jogador.cartas[i] = cartas[index].GetComponent<Carta>();
-                cartas[index].transform.parent = jogador.slots[i].transform;
-                if (jogador.cartas[i].valor == tombo.valor + 1)
+                Carta carta = GetCarta();
+                jogador.cartas[i] = carta;
+
+                if (jogador.cartas[i].valor == manilha)
                 {
-                    jogador.cartas[i].manilha = true;
+                    carta.SetaManilha();
                 }
-                cartas[index].transform.position = new Vector3(0, 0, 0);
-                cartas.Remove(cartas[index]);
+                carta.transform.position = jogador.slots[i].transform.position;
             }
         }
+    }
+
+    public void Descarta(Carta carta)
+    {
+        descarte.Add(carta);
+        Vector3 pos = this.transform.position + new Vector3(0,
+            0,
+            0.01f);
+        carta.transform.position = pos;
+    }
+
+    public Carta GetCarta()
+    {
+        int index = Random.Range(0, cartas.Count);
+        Carta carta = cartas[index].GetComponent<Carta>();
+        if (tombo != null)
+        {
+            int manilha = tombo.valor;
+            manilha++;
+            if (carta.valor == manilha)
+            {
+                carta.manilha = true;
+            }
+        }
+        cartas.Remove(carta.gameObject);
+        return carta;
+    }
+
+    public void BotGanhou()
+    {
+        rodada++;
+        if(rodada == 2)
+        {
+            pontos++;
+            Descarta(tombo);
+            tombo = null;
+            foreach (Jogador jogador in jogadores)
+            {
+                jogador.TerminaRodada();
+                jogador.Reset();
+            }
+        }
+    }
+
+    public void TerminaRodada()
+    {
+        foreach(Carta carta in descarte)
+        {
+            cartas.Add(carta.gameObject);
+            carta.Reset();
+        }
+        descarte.Clear();
+        rodada = 0;
     }
 }
