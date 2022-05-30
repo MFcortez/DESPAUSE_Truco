@@ -11,12 +11,14 @@ public class Baralho : MonoBehaviour
     public GameObject cartaPrefab, 
         gameObjectTombo;
     public Jogador[] jogadores;
+    public int truco;
 
     int rodada;
     int pontos;
     
     void Start()
     {
+        truco = 1;
         for (int i = 0; i < 41; i++)
         {
             if(i > 0)
@@ -115,7 +117,7 @@ public class Baralho : MonoBehaviour
         rodada++;
         if(rodada == 2)
         {
-            pontos++;
+            pontos+= truco;
             Descarta(tombo);
             tombo = null;
             foreach (Jogador jogador in jogadores)
@@ -134,6 +136,30 @@ public class Baralho : MonoBehaviour
             carta.Reset();
         }
         descarte.Clear();
+        truco = 1;
         rodada = 0;
+    }
+
+    public void ChamaTruco(Jogador jogador)
+    {
+        int chanceDeAceitar = Random.Range(1, 10);
+        if(chanceDeAceitar > 6)
+        {
+            if (truco == 1)
+            {
+                truco = 3;
+            }
+            else
+            {
+                truco *= 2;
+            }
+            print("TRUUUUUUUUUUUCO!!!!, valendo: " + truco);
+        }
+        else
+        {
+            
+            jogador.Pontuo();
+            print("Oponente fugiu, ganhou: " + truco );
+        }
     }
 }

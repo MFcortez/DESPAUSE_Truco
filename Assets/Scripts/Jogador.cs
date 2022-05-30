@@ -9,6 +9,7 @@ public class Jogador : MonoBehaviour
     int rodada;
     public GameObject[] slots;
     public Baralho baralho;
+
     void Start()
     {
         baralho = FindObjectOfType<Baralho>();
@@ -100,12 +101,16 @@ public class Jogador : MonoBehaviour
         rodada++;
         if (rodada == 2)
         {
-            baralho.Descarta(baralho.tombo);
-            baralho.tombo = null;
-            pontos++;
-            Reset();
-            TerminaRodada();
+            Pontuo();
         }
+    }
+    public void Pontuo()
+    {
+        baralho.Descarta(baralho.tombo);
+        baralho.tombo = null;
+        pontos += baralho.truco;
+        Reset();
+        TerminaRodada();
     }
 
     public void TerminaRodada()
@@ -119,5 +124,17 @@ public class Jogador : MonoBehaviour
             }
         }
         baralho.TerminaRodada();
+    }
+
+    public void Truco()
+    {
+        if(baralho.truco >= 12)
+        {
+            print("Tá valendo o jogo");
+        }
+        else
+        {
+            baralho.ChamaTruco(this);
+        }
     }
 }
